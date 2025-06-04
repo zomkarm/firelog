@@ -20,6 +20,7 @@ import AlertsPage from "./components/forms/client/AlertsPage";
 import SettingsPage from "./components/forms/client/SettingsPage";
 import ClientConfigPage from "./components/forms/client/ClientConfigPage";
 import ClientApiDocsPage from "./components/forms/client/ClientApiDocsPage";
+import PrivateRoute from "./components/routes/PrivateRoute";
 
 
 
@@ -33,21 +34,25 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
 
         {/* ✅ CLIENT ROUTES */}
-        <Route path="/client" element={<ClientLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="logs" element={<LogsPage />} />
-          <Route path="alerts" element={<AlertsPage />} />
-          <Route path="config" element={<ClientConfigPage />} />
-          <Route path="documentation" element={<ClientApiDocsPage />} />
-          <Route path="settings" element={<SettingsPage />} />
+        <Route element={<PrivateRoute allowedRole="client" />}>
+          <Route path="/client" element={<ClientLayout />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="logs" element={<LogsPage />} />
+            <Route path="alerts" element={<AlertsPage />} />
+            <Route path="config" element={<ClientConfigPage />} />
+            <Route path="documentation" element={<ClientApiDocsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
         </Route>
 
         {/* ✅ ADMIN ROUTES */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="logs" element={<AdminLogsPage />} />
-          <Route path="alerts" element={<AdminAlertsPage />} />
-          <Route path="settings" element={<AdminSettingsPage />} />
+        <Route element={<PrivateRoute allowedRole="admin" />}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="logs" element={<AdminLogsPage />} />
+            <Route path="alerts" element={<AdminAlertsPage />} />
+            <Route path="settings" element={<AdminSettingsPage />} />
+          </Route>
         </Route>
 
         {/* ✅ You can do same for /admin in future */}

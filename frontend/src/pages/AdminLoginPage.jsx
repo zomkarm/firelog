@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const AdminLoginPage = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" , role:"admin"});
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -21,7 +21,8 @@ const AdminLoginPage = () => {
       const { token, user } = res.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-
+      localStorage.setItem("role", "admin");
+      
       // Redirect to admin dashboard
       navigate("/admin/dashboard");
     } catch (err) {

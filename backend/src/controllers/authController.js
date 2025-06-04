@@ -26,8 +26,8 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const { email, password, role } = req.body;
+    const user = await User.findOne({ email,role });
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const isMatch = await user.comparePassword(password);

@@ -13,6 +13,7 @@ router.delete('/users/:id', adminController.deleteUser);
 
 // Log Management
 router.get('/logs', adminController.getAllLogs);
+router.get('/logs/stats', adminController.getLogStats);
 router.get('/logs/:id', adminController.getLogById);
 router.delete('/logs/:id', adminController.deleteLogById);
 
@@ -28,6 +29,5 @@ router.get('/stats/ip-heatmap', adminController.getIPHeatmap);
 
 router.get('/settings/', adminController.getProfile);
 router.put('/settings/', adminController.setProfile);
-
 
 module.exports = router;

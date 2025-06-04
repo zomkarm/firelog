@@ -20,11 +20,40 @@ exports.deleteUser = async (req, res) => {
   res.json({ message: 'User deleted' });
 };
 
-// Logs
+// Logs with pagination
 exports.getAllLogs = async (req, res) => {
-  const logs = await Log.find().sort({ createdAt: -1 });
-  res.json(logs);
+  try {
+    const page = parseInt(req.query.page) || 1; // current page
+    const limit = parseInt(req.query.limit) || 10; // items per page
+    const search = req.query.search || '';
+
+    const query = search
+      ? {
+          $or: [
+            { message: { $regex: search, $options: 'i' } },
+            { ip: { $regex: search, $options: 'i' } },
+            { level: { $regex: search, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    const totalLogs = await Log.countDocuments(query);
+    const logs = await Log.find(query)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.json({
+      data: logs,
+      page,
+      totalPages: Math.ceil(totalLogs / limit),
+      totalLogs,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch logs' });
+  }
 };
+
 
 exports.getLogById = async (req, res) => {
   const log = await Log.findById(req.params.id);
@@ -130,5 +159,45 @@ exports.setProfile = async (req, res) => {
   } catch (err) {
     console.error('Error updating settings:', err);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getLogStats = async (req, res) => {
+  try {
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 6);
+
+    // Logs per day (last 7 days)
+    const dailyCounts = await Log.aggregate([
+      {
+        $match: { createdAt: { $gte: last7Days } }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    // Logs by level
+    const levelCounts = await Log.aggregate([
+      {
+        $group: {
+          _id: "$level",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.json({
+      logsPerDay: dailyCounts,
+      logsByLevel: levelCounts,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch stats" });
   }
 };

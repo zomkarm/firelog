@@ -4,6 +4,8 @@ export default function LogsPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Filter state: example filter by search text (could expand later)
   const [searchText, setSearchText] = useState('');
@@ -14,7 +16,7 @@ export default function LogsPage() {
     setError(null);
 
     try {
-      let url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/logs`;
+      let url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/logs?page=${page}&limit=10`;
       // Optionally, you could append query params for filtering here
       if (searchText.trim()) {
         url += `?search=${encodeURIComponent(searchText.trim())}`;
@@ -26,7 +28,8 @@ export default function LogsPage() {
       });
       if (!response.ok) throw new Error('Failed to fetch logs');
       const data = await response.json();
-      setLogs(data);
+      setLogs(data.data);
+      setTotalPages(data.totalPages);
     } catch (err) {
       setError(err.message || 'Something went wrong');
     } finally {
@@ -37,7 +40,7 @@ export default function LogsPage() {
   // Fetch on mount and when searchText changes
   useEffect(() => {
     fetchLogs();
-  }, [searchText]);
+  }, [searchText,page]);
 
   return (
     <div>
@@ -91,6 +94,28 @@ export default function LogsPage() {
           </table>
         </div>
       )}
+      <div className="mt-4 flex justify-center items-center gap-4">
+        <button
+            disabled={page === 1}
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+            Previous
+        </button>
+
+        <span className="text-sm">
+            Page {page} of {totalPages}
+        </span>
+
+        <button
+            disabled={page === totalPages}
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+            Next
+        </button>
+        </div>
+
     </div>
   );
 }
