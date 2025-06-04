@@ -14,12 +14,16 @@ export default function AlertsPage() {
     setError(null);
 
     try {
-      let url = `${import.meta.env.VITE_BACKEND_URL}/api/alerts`;
+      let url = `${import.meta.env.VITE_BACKEND_URL}/api/client/alerts`;
       // Optionally, you could append query params for filtering here
       if (searchText.trim()) {
         url += `?search=${encodeURIComponent(searchText.trim())}`;
       }
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       if (!response.ok) throw new Error('Failed to fetch alerts');
       const data = await response.json();
       setAlerts(data);

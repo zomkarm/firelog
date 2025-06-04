@@ -14,7 +14,7 @@ export default function LogsPage() {
     setError(null);
 
     try {
-      let url = `${import.meta.env.VITE_BACKEND_URL}/api/client/logs`;
+      let url = `${import.meta.env.VITE_BACKEND_URL}/api/admin/logs`;
       // Optionally, you could append query params for filtering here
       if (searchText.trim()) {
         url += `?search=${encodeURIComponent(searchText.trim())}`;

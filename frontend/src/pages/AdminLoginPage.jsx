@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const LoginPage = () => {
+const AdminLoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -22,8 +22,8 @@ const LoginPage = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect to client dashboard
-      navigate("/client/dashboard");
+      // Redirect to admin dashboard
+      navigate("/admin/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
@@ -32,7 +32,7 @@ const LoginPage = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Client Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
@@ -57,15 +57,9 @@ const LoginPage = () => {
           </button>
         </form>
         {error && <p className="text-red-500 mt-4 text-sm text-center">{error}</p>}
-        <p className="text-sm text-center mt-4">
-          Don’t have an account?{" "}
-          <Link to="/register" className="text-orange-600 hover:underline">
-            Register
-          </Link>
-        </p>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;

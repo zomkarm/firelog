@@ -10,7 +10,7 @@ import {
   LogOut,
 } from 'lucide-react';
 
-export default function ClientDashboard() {
+export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { pathname } = useLocation();
 
@@ -18,7 +18,7 @@ export default function ClientDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    window.location.href = '/admin/login';
   };
 
   const linkClasses = (path) =>
@@ -36,22 +36,16 @@ export default function ClientDashboard() {
       >
         <div className="p-4 font-bold text-xl border-b">🔥 FireLog</div>
         <nav className="p-4 flex flex-col gap-4">
-          <Link to="/client/dashboard" className={linkClasses('/client/dashboard')}>
+          <Link to="/admin/dashboard" className={linkClasses('/admin/dashboard')}>
             <LayoutDashboard size={18} /> Dashboard
           </Link>
-          <Link to="/client/logs" className={linkClasses('/client/logs')}>
+          <Link to="/admin/logs" className={linkClasses('/admin/logs')}>
             <FileText size={18} /> Logs
           </Link>
-          <Link to="/client/alerts" className={linkClasses('/client/alerts')}>
+          <Link to="/admin/alerts" className={linkClasses('/admin/alerts')}>
             <Bell size={18} /> Alerts
           </Link>
-          <Link to="/client/documentation" className={linkClasses('/client/documentation')}>
-            <Bell size={18} /> API Documentation
-          </Link>
-          <Link to="/client/config" className={linkClasses('/client/config')}>
-            <Bell size={18} /> Configurations
-          </Link>
-          <Link to="/client/settings" className={linkClasses('/client/settings')}>
+          <Link to="/admin/settings" className={linkClasses('/admin/settings')}>
             <Settings size={18} /> Settings
           </Link>
           <button

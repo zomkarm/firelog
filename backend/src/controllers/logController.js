@@ -9,7 +9,7 @@ exports.createLog = async (req, res) => {
       const { ip, userId, type, message, severity } = req.body;
   
       // Save the log
-      const newLog = new Log({ ip, userId, type, message, severity });
+      const newLog = new Log({ ip, clientId: req.clientId, type, message, severity });
       const savedLog = await newLog.save();
   
       // === ALERT GENERATION LOGIC ===
@@ -30,6 +30,7 @@ exports.createLog = async (req, res) => {
   
         if (!existingAlert) {
           await Alert.create({
+            clientId:req.clientId,
             ip,
             reason: 'Repeated failed attempts',
             severity: 'high',
@@ -48,7 +49,7 @@ exports.createLog = async (req, res) => {
 // GET /logs
 exports.getAllLogs = async (req, res) => {
   try {
-    const logs = await Log.find().sort({ createdAt: -1 });
+    const logs = await Log.find({clientId: req.clientId}).sort({ createdAt: -1 });
     res.json(logs);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch logs' });
@@ -58,7 +59,7 @@ exports.getAllLogs = async (req, res) => {
 // GET /logs/:id
 exports.getLogById = async (req, res) => {
   try {
-    const log = await Log.findById(req.params.id);
+    const log = await Log.find({_id:req.params.id,clientId: req.clientId});
     if (!log) return res.status(404).json({ error: 'Log not found' });
     res.json(log);
   } catch (err) {
@@ -69,7 +70,7 @@ exports.getLogById = async (req, res) => {
 // GET /logs/ip/:ip
 exports.getLogsByIp = async (req, res) => {
   try {
-    const logs = await Log.find({ ip: req.params.ip });
+    const logs = await Log.find({ ip: req.params.ip,clientId: req.clientId });
     if (!logs) return res.status(404).json({ error: 'Logs not found' });
     res.json(logs);
   } catch (err) {

@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Log = require('../models/Log');
 const Alert = require('../models/Alert');
+const bcrypt = require('bcrypt'); 
 
 // Users
 exports.getAllUsers = async (req, res) => {
@@ -92,4 +93,42 @@ exports.getIPHeatmap = async (req, res) => {
     { $limit: 50 }
   ]);
   res.json(heatmap);
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findOne({_id:req.user.id}).select('-password');
+    if (!user) return res.status(404).json({ error: 'No user found' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch profile details', details: err.message });
+  }
+};
+
+exports.setProfile = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const updateData = { name, email };
+
+    // Optional password update
+    if (password && password.trim() !== '') {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(password, salt);
+    }
+
+    const updatedAdmin = await User.findByIdAndUpdate(
+      req.user.id, // from auth middleware
+      { $set: updateData },
+      { new: true, runValidators: true }
+    ).select('name email');
+
+    res.json({
+      message: 'Settings updated successfully',
+      admin: updatedAdmin,
+    });
+  } catch (err) {
+    console.error('Error updating settings:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
 };

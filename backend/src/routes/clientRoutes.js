@@ -24,4 +24,11 @@ router.delete('/account', clientController.deleteAccount);
 
 router.get('/apikey',clientController.getApiKey);
 router.put('/apikey',clientController.setApiKey);
+
+//Logs
+router.get('/logs',clientController.getAllLogs);
+
+//Alerts
+router.get('/alerts',clientController.getAllAlerts);
+
 module.exports = router;

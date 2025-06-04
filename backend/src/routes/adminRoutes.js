@@ -26,4 +26,8 @@ router.get('/stats/logs-count', adminController.getLogsCount);
 router.get('/stats/top-users', adminController.getTopUsers);
 router.get('/stats/ip-heatmap', adminController.getIPHeatmap);
 
+router.get('/settings/', adminController.getProfile);
+router.put('/settings/', adminController.setProfile);
+
+
 module.exports = router;

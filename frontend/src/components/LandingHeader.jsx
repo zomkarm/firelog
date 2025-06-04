@@ -7,7 +7,7 @@ const LandingHeader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
+    <header className="bg-[#7E22CE] shadow-md fixed top-0 left-0 right-0 z-50 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2">
@@ -16,9 +16,9 @@ const LandingHeader = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex space-x-6 items-center">
-          <a href="#overview" className="text-gray-700 hover:text-orange-600">Overview</a>
-          <a href="#pricing" className="text-gray-700 hover:text-orange-600">Pricing</a>
-          <a href="#about" className="text-gray-700 hover:text-orange-600">About Us</a>
+          <a href="#overview" className="hover:text-orange-600">Overview</a>
+          <a href="#pricing" className=" hover:text-orange-600">Pricing</a>
+          <a href="#about" className="hover:text-orange-600">About Us</a>
           <Link to="/login">
             <button className="px-4 py-2 rounded border text-sm hover:bg-gray-100" >Login</button>
           </Link>

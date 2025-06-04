@@ -2,6 +2,8 @@ const User = require('../models/User');
 const ClientConfig = require('../models/ClientConfig');
 const bcrypt = require('bcrypt'); 
 const crypto = require('crypto');
+const Log = require('../models/Log');
+const Alert = require('../models/Alert');
 
 exports.getProfile = async (req, res) => {
   try {
@@ -108,5 +110,25 @@ exports.deleteAccount = async (req, res) => {
     res.json({ message: 'Account and config deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Deletion failed', details: err.message });
+  }
+};
+
+// GET /logs
+exports.getAllLogs = async (req, res) => {
+  try {
+    const logs = await Log.find({clientId: req.user.id}).sort({ createdAt: -1 });
+    res.json(logs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch logs' });
+  }
+};
+
+// GET /alerts
+exports.getAllAlerts = async (req, res) => {
+  try {
+    const alerts = await Alert.find({clientId: req.user.id}).sort({ createdAt: -1 });
+    res.json(alerts);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch alerts' });
   }
 };
