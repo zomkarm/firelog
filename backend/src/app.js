@@ -19,15 +19,19 @@ app.use(rateLimit({
   max: 100
 }));
 
+app.use(cors({ origin: process.env.FRONTEND_URL }));
+
 app.use('/api/auth', require('./routes/authRoutes'));
 
-app.use('/logs', require('./routes/logRoutes'));
+app.use('/api/logs', require('./routes/logRoutes'));
 
-app.use('/alerts', require('./routes/alertRoutes'));
+app.use('/api/alerts', require('./routes/alertRoutes'));
 
-app.use('/stats', require('./routes/statRoutes'));
+app.use('/api/stats', require('./routes/statRoutes'));
 
-app.use('/admin', require('./routes/adminRoutes'));
+app.use('/api/client', require('./routes/clientRoutes'));
+
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // Routes (temporary)
 app.get('/', (req, res) => {

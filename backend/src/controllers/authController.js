@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
@@ -13,7 +14,9 @@ exports.register = async (req, res) => {
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ error: 'Email already registered' });
 
-    const user = await User.create({ name, email, password, role });
+    const apiKey = crypto.randomBytes(24).toString('hex');
+
+    const user = await User.create({ name, email, password, role ,apiKey});
 
     res.status(201).json({ message: 'User registered', user: { id: user._id, name, email, role } });
   } catch (err) {
@@ -32,7 +35,7 @@ exports.login = async (req, res) => {
 
     const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
 
-    res.json({ message: 'Login successful', token, user: { id: user._id, name: user.name, role: user.role } });
+    res.json({ message: 'Login successful', token, user: { id: user._id, name: user.name,email:user.email, role: user.role } });
   } catch (err) {
     res.status(500).json({ error: 'Login failed', details: err.message });
   }
