@@ -26,6 +26,7 @@ router.get('/apikey',clientController.getApiKey);
 router.put('/apikey',clientController.setApiKey);
 
 //Logs
+router.get('/logs/stats', clientController.getLogStats);
 router.get('/logs',clientController.getAllLogs);
 
 //Alerts

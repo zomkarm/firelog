@@ -132,3 +132,67 @@ exports.getAllAlerts = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch alerts' });
   }
 };
+
+exports.getLogStats = async (req, res) => {
+  try {
+    const clientId = req.user.id;
+
+    const last7Days = new Date();
+    last7Days.setDate(last7Days.getDate() - 6);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Total logs for client
+    const totalLogs = await Log.countDocuments({ clientId });
+
+    // Logs today for client
+    const logsToday = await Log.countDocuments({
+      clientId,
+      createdAt: { $gte: today },
+    });
+
+    // Unique IPs for client
+    const uniqueIPs = await Log.distinct("ip", { clientId }).then(ips => ips.length);
+
+    // Logs per day (last 7 days)
+    const logsPerDay = await Log.aggregate([
+      {
+        $match: {
+          clientId: req.user._id,
+          createdAt: { $gte: last7Days },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // Logs by level for client
+    const logsByLevel = await Log.aggregate([
+      { $match: { clientId: req.user._id } },
+      {
+        $group: {
+          _id: "$level",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.json({
+      logsPerDay,
+      logsByLevel,
+      totalLogs,
+      logsToday,
+      uniqueIPs,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch stats" });
+  }
+};

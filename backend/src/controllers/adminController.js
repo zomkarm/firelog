@@ -165,6 +165,16 @@ exports.setProfile = async (req, res) => {
 exports.getLogStats = async (req, res) => {
   try {
     const last7Days = new Date();
+    const totalLogs = await Log.countDocuments();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const logsToday = await Log.countDocuments({
+      createdAt: { $gte: today },
+    });
+
+const uniqueIPs = await Log.distinct("ip").then((ips) => ips.length);
     last7Days.setDate(last7Days.getDate() - 6);
 
     // Logs per day (last 7 days)
@@ -196,6 +206,9 @@ exports.getLogStats = async (req, res) => {
     res.json({
       logsPerDay: dailyCounts,
       logsByLevel: levelCounts,
+      totalLogs,
+      logsToday,
+      uniqueIPs,
     });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch stats" });

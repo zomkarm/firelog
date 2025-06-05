@@ -2,6 +2,9 @@
 const Log = require('../models/Log');
 const Alert = require('../models/Alert');
 const axios = require('axios');
+const User = require('../models/User');
+const { sendEmailAlert } = require('../utils/emailSender');
+const { sendSlackAlert } = require('../utils/slackSender');
 
 // POST /logs
 exports.createLog = async (req, res) => {
@@ -37,7 +40,23 @@ exports.createLog = async (req, res) => {
           });
         }
       }
-  
+      // === SEND ALERTS IF ENABLED ===
+    if (process.env.ALERTS === "Enable" && alertGenerated) {
+      // Get client alert config (if exists)
+      const client = await User.findById(req.clientId);
+
+      const senderEmail = client?.alertEmail || process.env.EMAIL_USER;
+
+      // Send Email
+      await sendEmailAlert(
+        senderEmail,
+        '🚨 FireLog Alert: Repeated Attempts',
+        alertMessage
+      );
+
+      // Send Slack Alert
+      await sendSlackAlert(alertMessage);
+    }
       res.status(201).json(savedLog);
     } catch (err) {
       console.error('Error saving log:', err);
